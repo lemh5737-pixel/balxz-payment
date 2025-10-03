@@ -57,7 +57,7 @@ export default function Home() {
         <header className="bg-blue-900 text-white py-8 px-4 shadow-xl">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-3xl md:text-4xl font-black tracking-wider">
-              *PAYMENT BALZX STR* [0310]💥💸
+              PAYMENT BALZX STR [0310]💥💸
             </h1>
             <p className="mt-2 text-blue-200 text-sm md:text-base">
               Sistem Pembayaran Terpercaya
@@ -170,10 +170,10 @@ export default function Home() {
           {/* Footer */}
           <footer className="mt-12 text-center text-gray-600 pb-8">
             <p className="text-sm">
-              © 2024 BALZX STR Payment - All Rights Reserved
+              © 2024 Balxz - Just TF Without Words 
             </p>
             <p className="text-xs mt-2 text-gray-500">
-              Powered by Next.js & Tailwind CSS
+              Powered by Balxz
             </p>
           </footer>
         </main>
