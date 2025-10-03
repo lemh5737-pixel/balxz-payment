@@ -1,24 +1,26 @@
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import Head from 'next/head';
 
-// Define the tile types with actual Mahjong tile image URLs
+// Define the tile types with custom CSS styles
 const TILE_TYPES = [
-  { id: 'zhong', name: 'Zhong', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/zhong.png' },
-  { id: 'fa', name: 'Fa', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/fa.png' },
-  { id: 'bamboo1', name: 'Bamboo 1', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/bamboo1.png' },
-  { id: 'bamboo2', name: 'Bamboo 2', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/bamboo2.png' },
-  { id: 'bamboo3', name: 'Bamboo 3', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/bamboo3.png' },
-  { id: 'character1', name: 'Character 1', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/character1.png' },
-  { id: 'character2', name: 'Character 2', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/character2.png' },
-  { id: 'character3', name: 'Character 3', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/character3.png' },
-  { id: 'circle1', name: 'Circle 1', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/circle1.png' },
-  { id: 'circle2', name: 'Circle 2', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/circle2.png' },
-  { id: 'circle3', name: 'Circle 3', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/circle3.png' },
-  { id: 'wind-east', name: 'East Wind', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/wind-east.png' },
-  { id: 'dragon-green', name: 'Green Dragon', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/dragon-green.png' },
-  { id: 'dragon-red', name: 'Red Dragon', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/dragon-red.png' },
-  { id: 'dragon-white', name: 'White Dragon', url: 'https://raw.githubusercontent.com/loiane/mahjong-game/master/assets/images/tiles/dragon-white.png' },
+  { id: 'zhong', name: 'Zhong', symbol: '中', color: 'red' },
+  { id: 'fa', name: 'Fa', symbol: '發', color: 'green' },
+  { id: 'bamboo1', name: 'Bamboo 1', symbol: '🎋', color: 'green' },
+  { id: 'bamboo2', name: 'Bamboo 2', symbol: '🎋🎋', color: 'green' },
+  { id: 'bamboo3', name: 'Bamboo 3', symbol: '🎋🎋🎋', color: 'green' },
+  { id: 'character1', name: 'Character 1', symbol: '一', color: 'black' },
+  { id: 'character2', name: 'Character 2', symbol: '二', color: 'black' },
+  { id: 'character3', name: 'Character 3', symbol: '三', color: 'black' },
+  { id: 'circle1', name: 'Circle 1', symbol: '●', color: 'red' },
+  { id: 'circle2', name: 'Circle 2', symbol: '●●', color: 'red' },
+  { id: 'circle3', name: 'Circle 3', symbol: '●●●', color: 'red' },
+  { id: 'wind-east', name: 'East Wind', symbol: '東', color: 'black' },
+  { id: 'wind-south', name: 'South Wind', symbol: '南', color: 'black' },
+  { id: 'wind-west', name: 'West Wind', symbol: '西', color: 'black' },
+  { id: 'wind-north', name: 'North Wind', symbol: '北', color: 'black' },
+  { id: 'dragon-green', name: 'Green Dragon', symbol: '龍', color: 'green' },
+  { id: 'dragon-red', name: 'Red Dragon', symbol: '龍', color: 'red' },
+  { id: 'dragon-white', name: 'White Dragon', symbol: '白', color: 'gray' },
 ];
 
 export default function MahjongGame() {
@@ -29,6 +31,19 @@ export default function MahjongGame() {
   const [showNotMatch, setShowNotMatch] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [multiplier, setMultiplier] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Initialize the game
   useEffect(() => {
@@ -133,6 +148,7 @@ export default function MahjongGame() {
     <>
       <Head>
         <title>Mahjong Match Game</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <style>{`
           @keyframes pulse {
             0%, 100% { transform: scale(1); }
@@ -148,6 +164,11 @@ export default function MahjongGame() {
           @keyframes fadeOut {
             from { opacity: 1; transform: scale(1) rotate(0deg); }
             to { opacity: 0; transform: scale(0.8) rotate(10deg); }
+          }
+          
+          @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
           }
           
           .tile-selected {
@@ -175,30 +196,103 @@ export default function MahjongGame() {
           .multiplier-display {
             background: linear-gradient(135deg, #00C851 0%, #00ff00 100%);
           }
+          
+          .mahjong-tile {
+            background: linear-gradient(145deg, #f0f0f0, #ffffff);
+            border: 2px solid #d0d0d0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+          }
+          
+          .mahjong-tile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%);
+            pointer-events: none;
+          }
+          
+          .mahjong-tile::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30%;
+            background: linear-gradient(to top, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 100%);
+            pointer-events: none;
+          }
+          
+          .tile-symbol {
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            position: relative;
+          }
+          
+          .tile-symbol-red {
+            color: #d32f2f;
+          }
+          
+          .tile-symbol-green {
+            color: #388e3c;
+          }
+          
+          .tile-symbol-black {
+            color: #212121;
+          }
+          
+          .tile-symbol-gray {
+            color: #757575;
+          }
+          
+          @media (max-width: 767px) {
+            .mobile-tile {
+              height: 60px !important;
+            }
+            
+            .mobile-symbol {
+              font-size: 1.5rem !important;
+            }
+            
+            .mobile-header {
+              font-size: 2rem !important;
+            }
+            
+            .mobile-score {
+              font-size: 1.5rem !important;
+            }
+          }
         `}</style>
       </Head>
       
-      <div className="min-h-screen mahjong-bg py-8 px-4">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen mahjong-bg py-4 px-2 md:py-8 md:px-4">
+        <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <header className="text-center mb-8">
-            <h1 className="text-5xl font-bold text-white mb-6 drop-shadow-lg">🀄 Mahjong Match Game</h1>
+          <header className="text-center mb-6 md:mb-8">
+            <h1 className={`text-3xl md:text-5xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg mobile-header`}>
+              🀄 Mahjong Match Game
+            </h1>
             
             {/* Score and Multiplier Display */}
-            <div className="flex justify-center items-center gap-6 mb-4">
-              <div className="score-display px-6 py-3 rounded-lg shadow-lg">
-                <div className="text-white text-lg font-semibold">Score</div>
-                <div className="text-white text-3xl font-bold">{score}</div>
+            <div className={`flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 mb-4`}>
+              <div className="score-display px-4 py-2 md:px-6 md:py-3 rounded-lg shadow-lg">
+                <div className="text-white text-sm md:text-lg font-semibold">Score</div>
+                <div className="text-white text-xl md:text-3xl font-bold mobile-score">{score}</div>
               </div>
               
-              <div className="multiplier-display px-6 py-3 rounded-lg shadow-lg">
-                <div className="text-white text-lg font-semibold">Multiplier</div>
-                <div className="text-white text-3xl font-bold">x{multiplier}</div>
+              <div className="multiplier-display px-4 py-2 md:px-6 md:py-3 rounded-lg shadow-lg">
+                <div className="text-white text-sm md:text-lg font-semibold">Multiplier</div>
+                <div className="text-white text-xl md:text-3xl font-bold mobile-score">x{multiplier}</div>
               </div>
               
               <button
                 onClick={initializeGame}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 shadow-lg font-bold"
+                className="px-4 py-2 md:px-6 md:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 shadow-lg font-bold text-sm md:text-base"
               >
                 Restart Game
               </button>
@@ -207,26 +301,26 @@ export default function MahjongGame() {
 
           {/* Game Won Message */}
           {gameWon && (
-            <div className="text-center mb-6 p-6 bg-yellow-400 rounded-lg shadow-2xl animate-pulse">
-              <p className="text-3xl font-bold text-yellow-900">🎉 You Win!</p>
-              <p className="text-xl text-yellow-800 mt-2">Final Score: {score}</p>
+            <div className="text-center mb-6 p-4 md:p-6 bg-yellow-400 rounded-lg shadow-2xl animate-pulse">
+              <p className="text-2xl md:text-3xl font-bold text-yellow-900">🎉 You Win!</p>
+              <p className="text-lg md:text-xl text-yellow-800 mt-2">Final Score: {score}</p>
             </div>
           )}
 
           {/* Not Match Message */}
           {showNotMatch && (
-            <div className="text-center mb-6 p-4 bg-red-500 rounded-lg shadow-xl">
-              <p className="text-2xl font-bold text-white">❌ Not a match!</p>
+            <div className="text-center mb-6 p-3 md:p-4 bg-red-500 rounded-lg shadow-xl">
+              <p className="text-xl md:text-2xl font-bold text-white">❌ Not a match!</p>
             </div>
           )}
 
           {/* Game Board */}
-          <div className="bg-red-900 bg-opacity-50 p-6 rounded-xl shadow-2xl">
-            <div className="grid grid-cols-8 gap-3">
+          <div className="bg-red-900 bg-opacity-50 p-3 md:p-6 rounded-xl shadow-2xl">
+            <div className={`grid ${isMobile ? 'grid-cols-4' : 'grid-cols-6 md:grid-cols-8'} gap-2 md:gap-3`}>
               {tiles.map((tile, index) => (
                 <div
                   key={tile.uniqueId}
-                  className={`relative h-24 cursor-pointer transform transition-all duration-300 ${
+                  className={`relative ${isMobile ? 'h-16' : 'h-20 md:h-24'} cursor-pointer transform transition-all duration-300 mobile-tile ${
                     tile.matched ? 'opacity-0 pointer-events-none tile-matched' : 'hover:scale-105'
                   } ${
                     selectedTiles.some(t => t.index === index)
@@ -239,14 +333,15 @@ export default function MahjongGame() {
                   }`}
                   onClick={() => handleTileClick(index)}
                 >
-                  <div className="absolute inset-0 bg-white rounded-lg shadow-lg overflow-hidden border-2 border-gray-300">
-                    <Image
-                      src={tile.url}
-                      alt={tile.name}
-                      layout="fill"
-                      objectFit="contain"
-                      className="p-1"
-                    />
+                  <div className="mahjong-tile absolute inset-0 rounded-lg overflow-hidden">
+                    <div className={`tile-symbol absolute inset-0 flex items-center justify-center text-2xl md:text-3xl mobile-symbol ${
+                      tile.color === 'red' ? 'tile-symbol-red' :
+                      tile.color === 'green' ? 'tile-symbol-green' :
+                      tile.color === 'black' ? 'tile-symbol-black' :
+                      'tile-symbol-gray'
+                    }`}>
+                      {tile.symbol}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -254,9 +349,9 @@ export default function MahjongGame() {
           </div>
 
           {/* Instructions */}
-          <div className="mt-8 p-6 bg-white bg-opacity-90 rounded-lg shadow-xl">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">How to Play:</h2>
-            <ul className="list-disc list-inside text-gray-700 space-y-2 text-lg">
+          <div className="mt-6 md:mt-8 p-4 md:p-6 bg-white bg-opacity-90 rounded-lg shadow-xl">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-3 md:mb-4">How to Play:</h2>
+            <ul className="list-disc list-inside text-gray-700 space-y-1 md:space-y-2 text-sm md:text-lg">
               <li>Click on a tile to select it</li>
               <li>Click on another tile to find its match</li>
               <li>If the tiles match, they disappear and you earn points</li>
@@ -268,4 +363,4 @@ export default function MahjongGame() {
       </div>
     </>
   );
-                                            }
+}
